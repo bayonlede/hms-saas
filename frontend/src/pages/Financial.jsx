@@ -120,7 +120,7 @@ export default function Financial() {
                 tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
               <YAxis type="category" dataKey="type" tick={{ fontSize:11, fill:C.muted }} width={100} />
               <Tooltip formatter={v => fmt.currency(v)} />
-              <Bar dataKey="value" name="Avg PKR/day" fill={C.sky} radius={[0,4,4,0]} />
+              <Bar dataKey="value" name="Avg £/day" fill={C.sky} radius={[0,4,4,0]} />
             </BarChart>
           </ResponsiveContainer>
           <p style={{ fontSize:11, color:C.muted, marginTop:8 }}>

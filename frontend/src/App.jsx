@@ -57,7 +57,14 @@ export default function App() {
         }
       `}</style>
 
-      <div style={{ display:'flex', minHeight:'100vh', background:'#f9fafb' }}>
+      <div style={{
+        display:'flex', minHeight:'100vh',
+        backgroundImage: 'url(https://media.istockphoto.com/id/2099370050/vector/health-care-and-abstract-geometric-medical-background-with-icons-concept-and-idea-for.jpg?s=612x612&w=0&k=20&c=1DtMRN0keWpygxoo7IvrHUnipxqsRkSpKpg0wKLj75M=)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundColor: '#f9fafb',
+      }}>
 
         {/* Fixed sidebar */}
         <Sidebar active={page} onSelect={setPage} />
@@ -69,6 +76,7 @@ export default function App() {
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
+          backgroundColor: 'rgba(249,250,251,0.82)',
         }}>
 
           {/* Top header bar */}
