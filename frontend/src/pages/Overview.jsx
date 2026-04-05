@@ -8,9 +8,9 @@ import { Card, StatCard, Grid, SectionTitle, Spinner, ErrorBox, Alert, C, Progre
 
 const RCOLORS = [C.teal, C.sky, C.gold, C.rose, '#8b5cf6']
 
-export default function Overview() {
-  const { data: kpis, loading, error } = useApi(api.kpis)
-  const { data: journey } = useApi(api.patientJourney)
+export default function Overview({ year, month }) {
+  const { data: kpis, loading, error } = useApi(() => api.kpis(year, month), [year, month])
+  const { data: journey } = useApi(() => api.patientJourney(year, month), [year, month])
 
   if (loading) return <Spinner />
   if (error)   return <ErrorBox msg={error} />

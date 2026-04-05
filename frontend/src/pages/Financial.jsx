@@ -11,13 +11,13 @@ import { Card, StatCard, Grid, SectionTitle, Spinner, ErrorBox, DataTable, Alert
 
 const PIE_COLORS = [C.teal, C.gold, C.sky, C.rose, '#8b5cf6']
 
-export default function Financial() {
-  const { data: kpis,      loading: l1 } = useApi(api.kpis)
-  const { data: deptRev,   loading: l2 } = useApi(api.revByDept)
-  const { data: paySum,    loading: l3 } = useApi(api.payModeSummary)
-  const { data: atRisk,    loading: l4 } = useApi(api.atRisk)
-  const { data: topPats,   loading: l5 } = useApi(api.topPatients)
-  const { data: revPerDay, loading: l6 } = useApi(api.revPerDay)
+export default function Financial({ year, month }) {
+  const { data: kpis,      loading: l1 } = useApi(() => api.kpis(year, month),           [year, month])
+  const { data: deptRev,   loading: l2 } = useApi(() => api.revByDept(year, month),      [year, month])
+  const { data: paySum,    loading: l3 } = useApi(() => api.payModeSummary(year, month),  [year, month])
+  const { data: atRisk,    loading: l4 } = useApi(() => api.atRisk(year, month),          [year, month])
+  const { data: topPats,   loading: l5 } = useApi(() => api.topPatients(10, year, month), [year, month])
+  const { data: revPerDay, loading: l6 } = useApi(() => api.revPerDay(year, month),       [year, month])
 
   if (l1||l2||l3||l4||l5||l6) return <Spinner />
 

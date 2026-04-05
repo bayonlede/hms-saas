@@ -17,11 +17,11 @@ const OUTCOME_COLORS = {
   'Visit Next Month':   C.sky,
 }
 
-export default function Surgery() {
-  const { data: summary, loading: l1 } = useApi(api.outcomeSummary)
-  const { data: byType,  loading: l2 } = useApi(api.surgicalOutcomes)
-  const { data: kpis,    loading: l3 } = useApi(api.kpis)
-  const { data: surgeons,loading: l4 } = useApi(api.surgeonUtil)
+export default function Surgery({ year, month }) {
+  const { data: summary, loading: l1 } = useApi(() => api.outcomeSummary(year, month), [year, month])
+  const { data: byType,  loading: l2 } = useApi(() => api.surgicalOutcomes(year, month), [year, month])
+  const { data: kpis,    loading: l3 } = useApi(() => api.kpis(year, month), [year, month])
+  const { data: surgeons,loading: l4 } = useApi(() => api.surgeonUtil(year, month), [year, month])
 
   if (l1||l2||l3||l4) return <Spinner />
 

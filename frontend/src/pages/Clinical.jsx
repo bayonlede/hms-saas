@@ -12,12 +12,12 @@ import { Card, StatCard, Grid, SectionTitle, Spinner, Alert, DataTable, C, Progr
 const SEASONS = ['Winter','Spring','Summer','Autumn']
 const SCOLS   = [C.sky, C.teal, C.gold, C.rose]
 
-export default function Clinical() {
-  const { data: diags,   loading: l1 } = useApi(api.diagnoses)
-  const { data: seasonal,loading: l2 } = useApi(api.diagsBySeason)
-  const { data: referral,loading: l3 } = useApi(api.referralNetwork)
-  const { data: chronic, loading: l4 } = useApi(api.chronicCohort)
-  const { data: docGap,  loading: l5 } = useApi(api.docGap)
+export default function Clinical({ year, month }) {
+  const { data: diags,   loading: l1 } = useApi(() => api.diagnoses(year, month), [year, month])
+  const { data: seasonal,loading: l2 } = useApi(() => api.diagsBySeason(year, month), [year, month])
+  const { data: referral,loading: l3 } = useApi(() => api.referralNetwork(year, month), [year, month])
+  const { data: chronic, loading: l4 } = useApi(() => api.chronicCohort(year, month), [year, month])
+  const { data: docGap,  loading: l5 } = useApi(() => api.docGap(year, month), [year, month])
 
   if (l1||l2||l3||l4||l5) return <Spinner />
 

@@ -11,17 +11,17 @@ import { Card, StatCard, Grid, SectionTitle, Spinner, Alert, DataTable, C, Progr
 
 const DOW_ORDER = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
-export default function Operational() {
+export default function Operational({ year, month }) {
   const [occStart, setOccStart] = useState('2024-11-01')
   const [occEnd,   setOccEnd]   = useState('2025-05-31')
 
   const { data: occ,  loading: l1, reload: reloadOcc } = useApi(
-    () => api.occupancy(occStart, occEnd), [occStart, occEnd]
+    () => api.occupancy(occStart, occEnd, year, month), [occStart, occEnd, year, month]
   )
-  const { data: alos,    loading: l2 } = useApi(api.alos)
-  const { data: readm,   loading: l3 } = useApi(api.readmission)
-  const { data: peak,    loading: l4 } = useApi(api.peakPatterns)
-  const { data: shifts,  loading: l5 } = useApi(api.shiftCoverage)
+  const { data: alos,    loading: l2 } = useApi(() => api.alos(year, month),          [year, month])
+  const { data: readm,   loading: l3 } = useApi(() => api.readmission(year, month),   [year, month])
+  const { data: peak,    loading: l4 } = useApi(() => api.peakPatterns(year, month),  [year, month])
+  const { data: shifts,  loading: l5 } = useApi(() => api.shiftCoverage(year, month), [year, month])
 
   const isLoading = l1||l2||l3||l4||l5
   if (isLoading && !occ) return <Spinner />

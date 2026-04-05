@@ -73,6 +73,57 @@ class DataStore:
         ).sort_values(["patient_id","admission_date"])
 
 
+# ── Period filter ─────────────────────────────────────────────────────────────
+
+def filter_store(ds: 'DataStore', year: int | None, month: int | None) -> 'DataStore':
+    """
+    Return a DataStore-like object with time-series tables filtered to the
+    requested year / month.  Reference tables (patients, staff, beds …) are
+    never filtered.  Returns ds unchanged when no filter is requested.
+    """
+    if year is None and month is None:
+        return ds
+
+    def _filt(df: pd.DataFrame, col: str) -> pd.DataFrame:
+        if col not in df.columns:
+            return df
+        mask = pd.Series(True, index=df.index)
+        if year is not None:
+            mask &= df[col].dt.year == year
+        if month is not None:
+            mask &= df[col].dt.month == month
+        return df[mask].copy()
+
+    fs = object.__new__(DataStore)   # skip __init__; assign attrs manually
+
+    # Reference tables — unfiltered
+    fs.patients    = ds.patients
+    fs.doctors     = ds.doctors
+    fs.nurses      = ds.nurses
+    fs.helpers     = ds.helpers
+    fs.beds        = ds.beds
+    fs.rooms       = ds.rooms
+    fs.wards       = ds.wards
+    fs.departments = ds.departments
+
+    # Time-series tables — filtered
+    fs.appointments = _filt(ds.appointments, 'appointment_date')
+    fs.medical      = _filt(ds.medical,      'visit_date')
+    fs.surgery      = _filt(ds.surgery,      'surgery_date')
+    fs.shifts       = _filt(ds.shifts,       'shift_date')
+    fs.bed_rec      = _filt(ds.bed_rec,      'admission_date')
+    fs.room_rec     = _filt(ds.room_rec,     'admission_date')
+
+    # Recompute all_admissions from the filtered records
+    bed_adm  = fs.bed_rec[['patient_id', 'admission_date', 'discharge_date']].assign(source='Bed')
+    room_adm = fs.room_rec[['patient_id', 'admission_date', 'discharge_date']].assign(source='Room')
+    fs.all_admissions = pd.concat(
+        [bed_adm, room_adm], ignore_index=True
+    ).dropna(subset=['admission_date']).sort_values(['patient_id', 'admission_date'])
+
+    return fs
+
+
 # ── Global singleton ──────────────────────────────────────────────────────────
 _store: DataStore | None = None
 

@@ -11,10 +11,10 @@ import { Card, StatCard, Grid, SectionTitle, Spinner, Alert, DataTable, C, Badge
 
 const STATUS_COLORS = { Completed: C.teal, 'No-Show': C.rose, Scheduled: C.sky, Cancelled: C.gold }
 
-export default function Appointments() {
-  const { data: status, loading: l1 } = useApi(api.apptStatus)
-  const { data: modes,  loading: l2 } = useApi(api.noshowByMode)
-  const { data: kpis,   loading: l3 } = useApi(api.kpis)
+export default function Appointments({ year, month }) {
+  const { data: status, loading: l1 } = useApi(() => api.apptStatus(year, month), [year, month])
+  const { data: modes,  loading: l2 } = useApi(() => api.noshowByMode(year, month), [year, month])
+  const { data: kpis,   loading: l3 } = useApi(() => api.kpis(year, month), [year, month])
 
   if (l1||l2||l3) return <Spinner />
 

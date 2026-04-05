@@ -9,12 +9,12 @@ import { api } from '../utils/api.js'
 import { fmt } from '../utils/format.js'
 import { Card, StatCard, Grid, SectionTitle, Spinner, DataTable, Alert, C, ProgressBar } from '../components/UI.jsx'
 
-export default function Staff() {
-  const { data: hc,    loading: l1 } = useApi(api.staffHeadcount)
-  const { data: surg,  loading: l2 } = useApi(api.surgeonUtil)
-  const { data: nurse, loading: l3 } = useApi(api.nurseContinuity)
-  const { data: kpis,  loading: l4 } = useApi(api.kpis)
-  const { data: shifts,loading: l5 } = useApi(api.shiftCoverage)
+export default function Staff({ year, month }) {
+  const { data: hc,    loading: l1 } = useApi(() => api.staffHeadcount(year, month), [year, month])
+  const { data: surg,  loading: l2 } = useApi(() => api.surgeonUtil(year, month), [year, month])
+  const { data: nurse, loading: l3 } = useApi(() => api.nurseContinuity(year, month), [year, month])
+  const { data: kpis,  loading: l4 } = useApi(() => api.kpis(year, month), [year, month])
+  const { data: shifts,loading: l5 } = useApi(() => api.shiftCoverage(year, month), [year, month])
 
   if (l1||l2||l3||l4||l5) return <Spinner />
 
