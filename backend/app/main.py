@@ -1,24 +1,30 @@
 """
 main.py  —  HMS Analytics API
 FastAPI application wired with all routers and CORS.
+Supports both PostgreSQL (production) and Excel (local/fallback) data sources.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import asyncio
 
-from app.core.config import APP_TITLE, APP_VERSION, ALLOWED_ORIGINS
+from app.core.config import APP_TITLE, APP_VERSION, USE_DATABASE, ASYNC_DATABASE_URL
 from app.services.data_loader import get_store
-from app.api.routes import overview, financial, operational, clinical, appointments, staff, surgery, explorer
+from app.api.routes import (
+    overview, financial, operational, clinical,
+    appointments, staff, surgery, explorer,
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load Excel data in a thread — keeps the event loop free to serve /health
-    print("⏳ Loading HMS data…")
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(None, get_store)
-    print("✅ Data loaded successfully")
+    source = "PostgreSQL" if USE_DATABASE else "Excel file"
+    print(f"⏳ Loading HMS data from {source}…")
+    try:
+        get_store()
+        print("✅ Data loaded successfully")
+    except Exception as e:
+        print(f"❌ Data load failed: {e}")
+        raise
     yield
     print("🛑 Shutting down")
 
@@ -30,16 +36,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # restrict in production via ALLOWED_ORIGINS
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers
+# ── Routers ───────────────────────────────────────────────────────────────────
 app.include_router(overview.router,     prefix="/api/overview",     tags=["Overview"])
 app.include_router(financial.router,    prefix="/api/financial",    tags=["Financial"])
 app.include_router(operational.router,  prefix="/api/operational",  tags=["Operational"])
@@ -52,7 +57,40 @@ app.include_router(explorer.router,     prefix="/api/explorer",     tags=["Explo
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": APP_VERSION}
+    ds = get_store()
+    return {
+        "status":       "ok",
+        "version":      APP_VERSION,
+        "data_source":  "postgresql" if USE_DATABASE else "excel",
+        "patients":     len(ds.patients),
+        "appointments": len(ds.appointments),
+    }
+
+
+@app.get("/api/db-status")
+async def db_status():
+    """Shows which data source is active and live record counts."""
+    ds = get_store()
+    return {
+        "data_source":     "postgresql" if USE_DATABASE else "excel",
+        "database_url_set": bool(ASYNC_DATABASE_URL),
+        "record_counts": {
+            "patients":      len(ds.patients),
+            "appointments":  len(ds.appointments),
+            "medical":       len(ds.medical),
+            "bed_records":   len(ds.bed_rec),
+            "room_records":  len(ds.room_rec),
+            "surgery":       len(ds.surgery),
+            "doctors":       len(ds.doctors),
+            "nurses":        len(ds.nurses),
+            "helpers":       len(ds.helpers),
+            "beds":          len(ds.beds),
+            "rooms":         len(ds.rooms),
+            "wards":         len(ds.wards),
+            "departments":   len(ds.departments),
+            "shifts":        len(ds.shifts),
+        }
+    }
 
 
 @app.get("/")
