@@ -3,6 +3,7 @@ main.py  —  HMS Analytics API
 FastAPI application wired with all routers and CORS.
 Supports both PostgreSQL (production) and Excel (local/fallback) data sources.
 """
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -18,15 +19,16 @@ from app.api.routes import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     source = "PostgreSQL" if USE_DATABASE else "Excel file"
-    print(f"⏳ Loading HMS data from {source}…")
+    print(f"Loading HMS data from {source}...")
     try:
-        get_store()
-        print("✅ Data loaded successfully")
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, get_store)
+        print("Data loaded successfully")
     except Exception as e:
-        print(f"❌ Data load failed: {e}")
+        print(f"Data load failed: {e}")
         raise
     yield
-    print("🛑 Shutting down")
+    print("Shutting down")
 
 
 app = FastAPI(
