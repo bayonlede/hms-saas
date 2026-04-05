@@ -37,12 +37,15 @@ const PAGE_TITLES = {
   predict:      'No-Show Predictor',
 }
 
+const SIDEBAR_W = 220
+
 export default function App() {
-  const [page, setPage] = useState('overview')
+  const [page,        setPage]        = useState('overview')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
     <>
-      {/* Global animation keyframes */}
+      {/* Global styles */}
       <style>{`
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont,
@@ -55,6 +58,15 @@ export default function App() {
           from { opacity:0; transform:translateY(12px); }
           to   { opacity:1; transform:translateY(0); }
         }
+        .sidebar-transition {
+          transition: transform 0.25s ease, width 0.25s ease;
+        }
+        .main-transition {
+          transition: margin-left 0.25s ease;
+        }
+        .hamburger-btn:hover {
+          background: #f3f4f6 !important;
+        }
       `}</style>
 
       <div style={{
@@ -66,12 +78,21 @@ export default function App() {
         backgroundColor: '#f9fafb',
       }}>
 
-        {/* Fixed sidebar */}
-        <Sidebar active={page} onSelect={setPage} />
+        {/* Sidebar — slides off-screen when hidden */}
+        <div className="sidebar-transition" style={{
+          position: 'fixed',
+          top: 0, left: 0, bottom: 0,
+          width: SIDEBAR_W,
+          transform: sidebarOpen ? 'translateX(0)' : `translateX(-${SIDEBAR_W}px)`,
+          zIndex: 100,
+          willChange: 'transform',
+        }}>
+          <Sidebar active={page} onSelect={setPage} />
+        </div>
 
         {/* Main content area */}
-        <main style={{
-          marginLeft: 220,
+        <main className="main-transition" style={{
+          marginLeft: sidebarOpen ? SIDEBAR_W : 0,
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
@@ -83,7 +104,7 @@ export default function App() {
           <header style={{
             background: C.white,
             borderBottom: `1px solid ${C.border}`,
-            padding: '0 32px',
+            padding: '0 24px',
             height: 56,
             display: 'flex',
             alignItems: 'center',
@@ -91,17 +112,48 @@ export default function App() {
             position: 'sticky',
             top: 0,
             zIndex: 50,
+            gap: 16,
           }}>
-            <div>
-              <h1 style={{ fontSize:16, fontWeight:700, color: C.navy, margin:0 }}>
-                {PAGE_TITLES[page]}
-              </h1>
-              <p style={{ fontSize:11, color: C.muted, margin:0 }}>
-                Hospital Management System · Jan 2022 – Dec 2025
-              </p>
+
+            {/* Left: hamburger + page title */}
+            <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+              {/* Hamburger toggle */}
+              <button
+                className="hamburger-btn"
+                onClick={() => setSidebarOpen(o => !o)}
+                title={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+                style={{
+                  display:'flex', flexDirection:'column', justifyContent:'center',
+                  alignItems:'center', gap:5,
+                  width:36, height:36, flexShrink:0,
+                  border:'none', borderRadius:8, cursor:'pointer',
+                  background:'transparent', padding:0,
+                }}
+              >
+                {/* Three lines */}
+                {[0,1,2].map(i => (
+                  <span key={i} style={{
+                    display:'block',
+                    width: i === 1 ? 16 : 20,   /* middle line slightly shorter */
+                    height: 2,
+                    borderRadius: 2,
+                    background: C.navy,
+                    transition: 'width 0.2s ease',
+                  }} />
+                ))}
+              </button>
+
+              <div>
+                <h1 style={{ fontSize:16, fontWeight:700, color: C.navy, margin:0 }}>
+                  {PAGE_TITLES[page]}
+                </h1>
+                <p style={{ fontSize:11, color: C.muted, margin:0 }}>
+                  Hospital Management System · Jan 2022 – Dec 2025
+                </p>
+              </div>
             </div>
 
-            {/* Header right: logo + badge */}
+            {/* Right: live badge + logo */}
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{
                 padding:'4px 12px', background: C.teal + '14',
@@ -119,7 +171,6 @@ export default function App() {
             padding: '28px 32px',
             flex: 1,
             animation: 'fadeInUp 0.25s ease',
-            key: page,
           }}>
             {PAGES[page]}
           </div>

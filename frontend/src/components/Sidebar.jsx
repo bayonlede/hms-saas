@@ -18,15 +18,13 @@ const NAV = [
 export default function Sidebar({ active, onSelect }) {
   return (
     <aside style={{
-      width: 220,
-      minHeight: '100vh',
+      width: '100%',
+      height: '100%',
       background: C.white,
       borderRight: `1px solid ${C.border}`,
       display: 'flex',
       flexDirection: 'column',
-      position: 'fixed',
-      top: 0, left: 0, bottom: 0,
-      zIndex: 100,
+      overflow: 'hidden',
     }}>
       {/* Brand */}
       <div style={{
