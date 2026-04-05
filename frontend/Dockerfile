@@ -11,9 +11,7 @@ RUN npm run build
 # Stage 2: serve with nginx
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
-# nginx:alpine's docker-entrypoint.sh automatically runs envsubst on *.template files
-# and outputs them to /etc/nginx/conf.d/ before starting nginx
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY nginx.conf /etc/nginx/nginx.conf.template
 EXPOSE 80
-# Use the default nginx CMD — entrypoint handles template substitution
-CMD ["nginx", "-g", "daemon off;"]
+# Selectively substitute only $PORT and $BACKEND_URL so nginx's own $variables are preserved
+CMD ["/bin/sh", "-c", "envsubst '$PORT $BACKEND_URL' < /etc/nginx/nginx.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
