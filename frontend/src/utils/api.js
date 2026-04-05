@@ -43,4 +43,14 @@ export const api = {
   // Explorer
   tables:             () => get('/api/explorer/tables'),
   tableData:          (t, p=1, ps=50) => get(`/api/explorer/table/${t}?page=${p}&page_size=${ps}`),
+  // ML Prediction
+  riskScores:         () => get('/api/predict/risk-scores'),
+  predictNoShow:      (body) => fetch(`${BASE}/api/predict/predict`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }).then(async r => {
+    if (!r.ok) throw new Error(`API error ${r.status}: /api/predict/predict`)
+    return r.json()
+  }),
 }

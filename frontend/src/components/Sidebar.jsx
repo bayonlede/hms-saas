@@ -12,6 +12,7 @@ const NAV = [
   { id:'staff',        label:'Staff & HR',   icon:'👥' },
   { id:'surgery',      label:'Surgery',      icon:'🔬' },
   { id:'explorer',     label:'Data Explorer',icon:'🗄️' },
+  { id:'predict',      label:'No-Show Predictor', icon:'🔮' },
 ]
 
 export default function Sidebar({ active, onSelect }) {

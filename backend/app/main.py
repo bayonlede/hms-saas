@@ -11,7 +11,7 @@ from app.core.config import APP_TITLE, APP_VERSION, USE_DATABASE, ASYNC_DATABASE
 from app.services.data_loader import get_store
 from app.api.routes import (
     overview, financial, operational, clinical,
-    appointments, staff, surgery, explorer,
+    appointments, staff, surgery, explorer, predict,
 )
 
 
@@ -53,6 +53,7 @@ app.include_router(appointments.router, prefix="/api/appointments", tags=["Appoi
 app.include_router(staff.router,        prefix="/api/staff",        tags=["Staff"])
 app.include_router(surgery.router,      prefix="/api/surgery",      tags=["Surgery"])
 app.include_router(explorer.router,     prefix="/api/explorer",     tags=["Explorer"])
+app.include_router(predict.router,      prefix="/api/predict",      tags=["Prediction"])
 
 
 @app.get("/health")

@@ -9,6 +9,7 @@ import Appointments from './pages/Appointments.jsx'
 import Staff        from './pages/Staff.jsx'
 import Surgery      from './pages/Surgery.jsx'
 import Explorer     from './pages/Explorer.jsx'
+import Predict      from './pages/Predict.jsx'
 import { C } from './components/UI.jsx'
 import Logo from './components/Logo.jsx'
 
@@ -21,6 +22,7 @@ const PAGES = {
   staff:        <Staff />,
   surgery:      <Surgery />,
   explorer:     <Explorer />,
+  predict:      <Predict />,
 }
 
 const PAGE_TITLES = {
@@ -32,6 +34,7 @@ const PAGE_TITLES = {
   staff:        'Staff & HR',
   surgery:      'Surgical Performance',
   explorer:     'Data Explorer',
+  predict:      'No-Show Predictor',
 }
 
 export default function App() {
