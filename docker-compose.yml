@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATA_FILE=/app/Hospital_Management_System.xlsx
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""      # empty = same origin via Vite proxy
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
