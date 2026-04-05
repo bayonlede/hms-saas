@@ -5,6 +5,7 @@ FastAPI application wired with all routers and CORS.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import asyncio
 
 from app.core.config import APP_TITLE, APP_VERSION, ALLOWED_ORIGINS
 from app.services.data_loader import get_store
@@ -13,9 +14,10 @@ from app.api.routes import overview, financial, operational, clinical, appointme
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load and cache data on startup
+    # Load Excel data in a thread — keeps the event loop free to serve /health
     print("⏳ Loading HMS data…")
-    get_store()
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, get_store)
     print("✅ Data loaded successfully")
     yield
     print("🛑 Shutting down")
